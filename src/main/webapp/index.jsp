@@ -39,7 +39,7 @@ td button {
 }
 
 #start_btn {
-	width: 200px;
+	width: 100px;
 	height: 50px;
 }
 
@@ -60,7 +60,13 @@ table tr td.lastCol {
 #start_div {
 	position: relative;
 	left: 70px;
-	top: 40px
+	top: 40px;
+}
+
+.chance_div {
+	position: relative;
+	left: 0px;
+	top: 30px;
 }
 </style>
 </head>
@@ -75,7 +81,7 @@ table tr td.lastCol {
 			<tr>
 				<td><button id="1_0" class="game_btn"></button></td>
 				<td><button id="1_1" class="game_btn"></button></td>
-				<td class="lastCol" class="game_btn"><button id="1_2"></button></td>
+				<td class="lastCol"><button id="1_2" class="game_btn"></button></td>
 			</tr>
 			<tr class="lastrow">
 				<td><button id="2_0" class="game_btn"></button></td>
@@ -84,15 +90,45 @@ table tr td.lastCol {
 			</tr>
 		</table>
 	</div>
+	<div class="chance_div">
+		<form class="form-horizontal">
+			<div class="form-group">
+				<label class="col-sm-1 control-label">先后选择</label>
+				<div class="col-sm-2">
+					<select class="form-control ch" name="chance">
+						<option value="1">先手</option>
+						<option value="2">后手</option>
+					</select>
+				</div>
+			</div>
+			<div class="form-group">
+				<label class="col-sm-1 control-label">难度选择</label>
+				<div class="col-sm-2">
+					<select class="form-control ch" name="easy" >
+						<option value="1">一般</option>
+						<option value="2">困难</option>
+					</select>
+				</div>
+			</div>
+		</form>
+	</div>
 	<div id="start_div">
 		<button class="btn btn-success" id="start_btn">重新开始</button>
 	</div>
+
+
+
+
+
+
 	<script type="text/javascript">
+		//加载时初始化
 		$(function() {
 			empty();
 			empty_ui();
 		});
-		//${APP_PATH}/static/1.png
+
+		//点击时放图片
 		$("td button").click(
 				function() {
 					if ($(this).attr("click_at") == "a") {
@@ -114,11 +150,14 @@ table tr td.lastCol {
 										"url(${APP_PATH}/static/2.jpg)");
 								$(id).attr("click_at", "a");
 							}
-							setTimeout(function(){isWin(result)}, 100);
+							setTimeout(function() {
+								isWin(result)
+							}, 100);
 
 						}
 					});
 				});
+		//判断是否赢了
 		function isWin(result) {
 			if (result.isWin == "2") {
 				alert("厉害,你赢了!");
@@ -134,38 +173,41 @@ table tr td.lastCol {
 				empty_ui();
 			}
 		}
+
+		//重新开始按钮
 		$("#start_btn").click(function() {
 			empty();
 			empty_ui();
 		});
+
+		//困难先手按钮选择后发送消息
+		$(".ch").change(function() {
+			empty();
+			empty_ui();
+		});
+
+		//后台数据的更新
 		function empty() {
 			$.ajax({
 				url : "${APP_PATH}/empty",
 				type : "get",
+				data : $("form").serialize(),
 				success : function(result) {
+					if (result.isWin != "null") {
+						var id = "#" + result.position;
+						$(id).css("background-image",
+								"url(${APP_PATH}/static/2.jpg)");
+						$(id).attr("click_at", "a");
+					}
 				}
 			});
 		}
+
+		//前台界面的更新
 		function empty_ui() {
 			$(".game_btn").removeClass("disabled");
-			$("#0_0").css("background-image", "");
-			$("#0_0").attr("click_at", "b");
-			$("#0_1").css("background-image", "");
-			$("#0_1").attr("click_at", "b");
-			$("#0_2").css("background-image", "");
-			$("#0_2").attr("click_at", "b");
-			$("#1_0").css("background-image", "");
-			$("#1_0").attr("click_at", "b");
-			$("#1_1").css("background-image", "");
-			$("#1_1").attr("click_at", "b");
-			$("#1_2").css("background-image", "");
-			$("#1_2").attr("click_at", "b");
-			$("#2_0").css("background-image", "");
-			$("#2_0").attr("click_at", "b");
-			$("#2_1").css("background-image", "");
-			$("#2_1").attr("click_at", "b");
-			$("#2_2").css("background-image", "");
-			$("#2_2").attr("click_at", "b");
+			$(".game_btn").css("background-image", "");
+			$(".game_btn").attr("click_at", "b");
 		}
 	</script>
 </body>

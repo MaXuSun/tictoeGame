@@ -8,6 +8,7 @@ public class GameStrategy implements ChanceStrategy{
   byte[] everyLineScore = new byte[size]; // 先3行后3列再左右对角和右左对角
   byte[] everyLineInpiece = new byte[size]; // 顺序同上,判断某条线上是否有棋子有的话就赋值为１，否则赋值为０
   CheckerBoard checkerBoard;
+  public int easy = 1;
   byte[][] weightBoard = new byte[CheckerBoard.BOARD_SIZE][CheckerBoard.BOARD_SIZE]; // 将一个棋盘的每个位置赋权值
 
   public Position chance(CheckerBoard checkerBoard) {
@@ -16,23 +17,37 @@ public class GameStrategy implements ChanceStrategy{
     this.setWeightBoard();
     System.out.println();
     for (int i = 0; i < size; i++) {
-      if (everyLineScore[i] == 2) { // 优先考虑是否会成功
+      if (everyLineScore[i] == 2*easy) { // 优先考虑是否会成功
         return getPosition(i);
       } 
     }
     for(int i = 0;i < size;i++) {
-      if (everyLineScore[i] == -2) {// 然后考虑对方是否会成功
+      if (everyLineScore[i] == -2*easy) {// 然后考虑对方是否会成功
         return getPosition(i);
       }
     }
     Position position = Position.stringToPosition("0,0");
+    int x = position.getX();
+    int y = position.getY();
     // 然后根据权重考虑地方
     for (int i = 0; i < CheckerBoard.BOARD_SIZE; i++) {
       for (int j = 0; j < CheckerBoard.BOARD_SIZE; j++) {
-        if (weightBoard[i][j] >= weightBoard[position.getX()][position
+        if (weightBoard[i][j] > weightBoard[position.getX()][position
             .getY()]) {
           position.setX((byte) i);
           position.setY((byte) j);
+        }
+      }
+    }
+    //如果所有高地的权值一样,随便找个地方
+    if(x==position.getX()&&y==position.getY()) {
+      for(int i =0;i < CheckerBoard.BOARD_SIZE;i++) {
+        for(int j =0;j < CheckerBoard.BOARD_SIZE;j++) {
+          if(checkerBoard.getBoard()[i][j]==0) {
+            position.setX((byte) i);
+            position.setY((byte) j);
+            break;
+          }
         }
       }
     }
@@ -151,4 +166,12 @@ public class GameStrategy implements ChanceStrategy{
     return null;
   }
 
+  public void printWeightBoard() {
+    for(int i = 0;i< 3;i++) {
+      for(int j = 0;j < 3;j++) {
+        System.out.print(weightBoard[i][j]+ "  ");
+      }
+      System.out.println();
+    }
+  }
 }

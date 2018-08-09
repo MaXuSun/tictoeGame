@@ -18,6 +18,9 @@ public class IsWin {
     everyLineScore[k++] = (byte) (board[0][0] + board[1][1] + board[2][2]);
     everyLineScore[k++] = (byte) (board[0][2] + board[1][1] + board[2][0]);
 
+    /*
+     * for (int i = 0; i < 8; i++) { System.out.print(everyLineScore[i]+"  "); }
+     */
     for (int i = 0; i < 8; i++) {
       if (everyLineScore[i] == 3) {
         return 1;
